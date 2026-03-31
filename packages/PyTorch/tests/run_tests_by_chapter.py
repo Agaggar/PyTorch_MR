@@ -13,36 +13,38 @@ class ChapterRun:
     exit_code: int
 
 
-def _collect_count(pytest_args, env):
+def _collect_count(pytest_args, env, cwd):
     p = subprocess.run(
         [sys.executable, "-m", "pytest", "--collect-only", "-q", *pytest_args],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
         env=env,
+        cwd=cwd,
     )
     lines = [ln.strip() for ln in p.stdout.splitlines() if ln.strip()]
     items = [ln for ln in lines if "::" in ln and not ln.startswith("<") and "warnings summary" not in ln.lower()]
     return len(items)
 
 
-def _run(pytest_args, env):
+def _run(pytest_args, env, cwd):
     p = subprocess.run(
         [sys.executable, "-m", "pytest", "-q", *pytest_args],
         env=env,
+        cwd=cwd,
     )
     return p.returncode
 
 
 def main():
     here = os.path.abspath(os.path.dirname(__file__))
-    # packages/ — parent of PyTorch/ and Python/
-    packages_dir = os.path.abspath(os.path.join(here, "..", "..", ".."))
-    torch_pkg_root = os.path.join(packages_dir, "PyTorch")
+    # tests/ -> PyTorch/ -> packages/
+    packages_dir = os.path.abspath(os.path.join(here, "..", ".."))
+    torch_src = os.path.join(packages_dir, "PyTorch", "src")
     python_pkg_root = os.path.join(packages_dir, "Python")
     env = dict(os.environ)
     sep = os.pathsep
-    extra = torch_pkg_root + sep + python_pkg_root
+    extra = torch_src + sep + python_pkg_root
     env["PYTHONPATH"] = extra + (sep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
 
     chapters = [
@@ -59,8 +61,8 @@ def main():
 
     for name, path in chapters:
         rel = os.path.relpath(path, packages_dir)
-        collected = _collect_count([rel], env)
-        exit_code = _run([rel], env)
+        collected = _collect_count([rel], env, cwd=packages_dir)
+        exit_code = _run([rel], env, cwd=packages_dir)
         runs.append(ChapterRun(name=name, path=rel, collected=collected, exit_code=exit_code))
         total_collected += collected
         any_failed = any_failed or (exit_code != 0)

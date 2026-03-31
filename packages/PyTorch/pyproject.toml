@@ -1,3 +1,51 @@
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytorch_mr"
+description = "PyTorch implementation of Modern Robotics: Mechanics, Planning, and Control"
+readme = "README.md"
+requires-python = ">=3.6"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Ayush Gaggar", email = "agaggar@u.northwestern.edu" }
+]
+keywords = ["robotics", "kinematics", "dynamics", "pytorch", "modern robotics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=1.20",
+    "torch>=1.10",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/Agaggar/PyTorch_MR/tree/master/packages/PyTorch"
+Documentation = "http://modernrobotics.org/"
+Repository = "https://github.com/Agaggar/PyTorch_MR.git"
+Issues = "https://github.com/Agaggar/PyTorch_MR/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Read version from the lightweight module only (avoid importing core.py -> torch in isolated builds).
+[tool.setuptools.dynamic]
+version = { attr = "pytorch_mr.__version__.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -8,11 +8,11 @@ import torch
 
 _HERE = os.path.dirname(__file__)
 
-# Prefer installed packages; fall back to sibling repo layout (packages/PyTorch + packages/Python).
+# Installed package: pytorch_mr is on sys.path. Local checkout: add src/.
 try:
     import modern_robotics.core as mr_np  # noqa: E402
 except ImportError:
-    _PKG_PYTHON_ROOT = os.path.abspath(os.path.join(_HERE, "..", "..", "..", "Python"))
+    _PKG_PYTHON_ROOT = os.path.abspath(os.path.join(_HERE, "..", "..", "Python"))
     if _PKG_PYTHON_ROOT not in sys.path:
         sys.path.insert(0, _PKG_PYTHON_ROOT)
     import modern_robotics.core as mr_np  # noqa: E402
@@ -20,9 +20,9 @@ except ImportError:
 try:
     import pytorch_mr.core as mr_t  # noqa: E402
 except ImportError:
-    _PKG_TORCH_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))
-    if _PKG_TORCH_ROOT not in sys.path:
-        sys.path.insert(0, _PKG_TORCH_ROOT)
+    _SRC_ROOT = os.path.abspath(os.path.join(_HERE, "..", "src"))
+    if _SRC_ROOT not in sys.path:
+        sys.path.insert(0, _SRC_ROOT)
     import pytorch_mr.core as mr_t  # noqa: E402
 
 

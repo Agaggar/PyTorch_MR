@@ -2,7 +2,12 @@
 
 PyTorch implementation of the routines from *Modern Robotics: Mechanics, Planning, and Control*, aligned with the NumPy `modern_robotics` reference in `packages/Python`.
 
-## Install
+## Install (global)
+```bash
+pip install pytorch-mr
+```
+
+## Install (local / editable)
 
 From this directory (`packages/PyTorch`):
 
@@ -10,7 +15,7 @@ From this directory (`packages/PyTorch`):
 pip install -e .
 ```
 
-Dependencies: `numpy`, `torch` (see `setup.py`).
+Dependencies are declared in `pyproject.toml` (`numpy`, `torch`).
 
 ## Import
 
@@ -22,29 +27,32 @@ from pytorch_mr.core import MatrixExp3, FKinBody
 
 ## Tests (NumPy parity)
 
-Tests compare against the reference `modern_robotics` package. Install the NumPy library from the sibling directory or from PyPI:
+Install the reference `modern_robotics` (local tree or PyPI) and `pytest`:
 
 ```bash
-pip install -e ../Python   # local reference, from packages/PyTorch
+pip install -e ../Python   # local reference
 # or
 pip install modern_robotics
 pip install pytest
 ```
 
-Run tests with both package roots on `PYTHONPATH` (from `packages/` in this repo):
+From `packages/PyTorch` (uses `[tool.pytest.ini_options]` `pythonpath = ["src"]`):
+
+```bash
+cd packages/PyTorch
+python -m pytest tests -q
+```
+
+From `packages/` with explicit `PYTHONPATH`:
 
 ```bash
 cd packages
-PYTHONPATH=PyTorch:Python python -m pytest PyTorch/pytorch_mr/tests -q
+PYTHONPATH=PyTorch/src:Python python -m pytest PyTorch/tests -q
 ```
 
-Or use the chapter summary script:
+Chapter summary:
 
 ```bash
 cd packages
-PYTHONPATH=PyTorch:Python python PyTorch/pytorch_mr/tests/run_tests_by_chapter.py
+PYTHONPATH=PyTorch/src:Python python PyTorch/tests/run_tests_by_chapter.py
 ```
-
-## Publishing to PyPI (optional)
-
-Build and upload with standard `twine` / `build` workflows; ensure the package name `pytorch_mr` is available on your target index.

@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-exec(open('pytorch_mr/__version__.py').read())
+exec(open('src/pytorch_mr/__version__.py').read())
 
 long_description = """
 # Modern Robotics (PyTorch)
@@ -11,15 +11,14 @@ _Modern Robotics: Mechanics, Planning, and Control_.
 This package mirrors the reference NumPy `modern_robotics` library with batched tensor support.
 
 Install the NumPy reference separately from `packages/Python` if you need parity tests or side-by-side use:
-
 `pip install -e ../Python` (from this directory's parent) or `pip install modern_robotics`.
 """
 
 setup(
     name="pytorch_mr",
     version=__version__,
-    author="Huan Weng, Mikhail Todes, Jarvis Schultz, Bill Hunt, Ayush Gaggar",
-    author_email="huanweng@u.northwestern.edu",
+    author="Ayush Gaggar, Huan Weng, Mikhail Todes, Jarvis Schultz, Bill Hunt, ",
+    author_email="agaggar@u.northwestern.edu",
     description=(
         "Modern Robotics: Mechanics, Planning, and Control — PyTorch implementation"
     ),
