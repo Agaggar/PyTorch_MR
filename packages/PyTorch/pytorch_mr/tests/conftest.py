@@ -6,16 +6,24 @@ import numpy as np
 import pytest
 import torch
 
-
-# Ensure local `packages/Python` is importable (not site-packages).
 _HERE = os.path.dirname(__file__)
-_PKG_PYTHON_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))
-if _PKG_PYTHON_ROOT not in sys.path:
-    sys.path.insert(0, _PKG_PYTHON_ROOT)
 
+# Prefer installed packages; fall back to sibling repo layout (packages/PyTorch + packages/Python).
+try:
+    import modern_robotics.core as mr_np  # noqa: E402
+except ImportError:
+    _PKG_PYTHON_ROOT = os.path.abspath(os.path.join(_HERE, "..", "..", "..", "Python"))
+    if _PKG_PYTHON_ROOT not in sys.path:
+        sys.path.insert(0, _PKG_PYTHON_ROOT)
+    import modern_robotics.core as mr_np  # noqa: E402
 
-import modern_robotics.core as mr_np  # noqa: E402
-import modern_robotics.pytorch_mr.core as mr_t  # noqa: E402
+try:
+    import pytorch_mr.core as mr_t  # noqa: E402
+except ImportError:
+    _PKG_TORCH_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))
+    if _PKG_TORCH_ROOT not in sys.path:
+        sys.path.insert(0, _PKG_TORCH_ROOT)
+    import pytorch_mr.core as mr_t  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -94,7 +102,6 @@ def apply_numpy_per_batch(
     - If shape is (N, ...), iterate over axis 0.
     - If shape is (...), treat as single item.
     """
-    # Determine batch size from first tensor argument (if any)
     batch = None
     for a in args_t:
         if isinstance(a, torch.Tensor) and a.ndim >= 2:
@@ -125,4 +132,3 @@ def apply_numpy_per_batch(
                 np_args_i.append(a)
         outs.append(f_np(*np_args_i))
     return outs
-

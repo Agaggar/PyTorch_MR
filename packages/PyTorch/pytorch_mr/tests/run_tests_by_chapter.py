@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -22,7 +21,6 @@ def _collect_count(pytest_args, env):
         text=True,
         env=env,
     )
-    # Each collected test item prints one line like: path::test_name
     lines = [ln.strip() for ln in p.stdout.splitlines() if ln.strip()]
     items = [ln for ln in lines if "::" in ln and not ln.startswith("<") and "warnings summary" not in ln.lower()]
     return len(items)
@@ -38,10 +36,14 @@ def _run(pytest_args, env):
 
 def main():
     here = os.path.abspath(os.path.dirname(__file__))
-    # packages/Python (so `modern_robotics/...` paths exist)
-    pkg_root = os.path.abspath(os.path.join(here, "..", "..", ".."))
+    # packages/ — parent of PyTorch/ and Python/
+    packages_dir = os.path.abspath(os.path.join(here, "..", "..", ".."))
+    torch_pkg_root = os.path.join(packages_dir, "PyTorch")
+    python_pkg_root = os.path.join(packages_dir, "Python")
     env = dict(os.environ)
-    env["PYTHONPATH"] = pkg_root + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    sep = os.pathsep
+    extra = torch_pkg_root + sep + python_pkg_root
+    env["PYTHONPATH"] = extra + (sep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
 
     chapters = [
         ("ch1_3", os.path.join(here, "test_ch1_3_numpy_parity.py")),
@@ -56,7 +58,7 @@ def main():
     any_failed = False
 
     for name, path in chapters:
-        rel = os.path.relpath(path, pkg_root)
+        rel = os.path.relpath(path, packages_dir)
         collected = _collect_count([rel], env)
         exit_code = _run([rel], env)
         runs.append(ChapterRun(name=name, path=rel, collected=collected, exit_code=exit_code))
@@ -74,4 +76,3 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

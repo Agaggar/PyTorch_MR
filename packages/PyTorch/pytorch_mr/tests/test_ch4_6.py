@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 import modern_robotics.core as np_mr
-import modern_robotics.pytorch_mr.core as pmr
+import pytorch_mr.core as pmr
 
 
 def test_fkin_body_example():
